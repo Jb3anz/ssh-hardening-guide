@@ -78,3 +78,46 @@ While still logged in as root on your VPS, run the following command to create a
 adduser sysadmin
 usermod -aG sudo sysadmin
 ```
+
+### 🚀 Transfering ssh key into the user
+
+we put your SSH key in the root account's folder. We need to copy that key over to your new user(sys admin) so you can log in as them. Run these commands (remember to replace sysadmin with your chosen username):
+
+```bash
+cp -r ~/.ssh /home/sysadmin/
+chown -R sysadmin:sysadmin /home/sysadmin/.ssh
+```
+
+Now, open a new terminal on your local laptop and test that you can log in as your new user:
+
+```bash
+ssh sysadmin@your_server_ip
+```
+
+If you log in successfully without being asked for a password, you are ready to lock down the server!
+
+## 🚀 Hardening the SSH Configuration
+
+in the new terminal as the the user sysadmin (or what ever username you chose)
+Open the main SSH configuration file using a text editor:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Scroll through the file and look for the following lines. You will need to change their values to no. If there is a # symbol at the beginning of the line, remove it to uncomment the setting:
+
+1. ```PasswordAuthentication no```
+2. `PermitRootLogin no`
+3. `PermitEmptyPasswords no`
+
+Save the file and exit (Press CTRL+S, hit Enter, then press CTRL+X).
+
+To apply these new security rules, restart the SSH service:
+
+```bash
+sudo systemctl restart ssh
+```
+
+> [!IMPORTANT]
+> Do not close your current terminal window! Before you log out, open a brand new terminal window on your laptop and try to log in to your VPS. If you made a mistake, your current active session is your only way to fix it without getting completely locked out of your server.
