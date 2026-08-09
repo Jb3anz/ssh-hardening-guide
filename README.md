@@ -3,7 +3,35 @@
 A technical guide that shows how to secure a Linux VPS, ensuring strict SSH endpoint isolation and disabling root vulnerabilities and enable automated firewall protections
 
 ---
-
+## 🚀 Quickstart (using the script)
+ 
+If you'd rather not run every command by hand, this repo includes `ssh-hardening-setup.sh`, an interactive script that automates everything covered below, user creation, key deployment, sshd hardening, UFW, and fail2ban.
+ 
+**Before you start:** generate your SSH keypair locally first (see Step 1 below), you'll need the contents of your `.pub` file ready to paste in during the script.
+ 
+```bash
+git clone https://github.com/jb3anz/ssh-hardening-guide.git
+cd ssh-hardening-guide
+chmod +x script.sh
+sudo ./script.sh
+```
+ 
+That runs **Phase 1**: it checks whether `sshd` is installed, creates a non-root sudo user, and deploys your public key with the correct permissions. When it finishes, it will tell you to stop.
+ 
+> [!WARNING]
+> Do not close your current session. Open a **brand new** terminal and confirm you can log in as the new user with your key, no password prompt. If SSH asks you for a `password:` at any point, your key isn't working yet, go fix that before continuing (see the Troubleshooting section below).
+ 
+Once you've confirmed the new login works, run Phase 2:
+ 
+```bash
+sudo ./ssh-hardening-setup.sh --phase2
+```
+ 
+This backs up `sshd_config`, disables password/root SSH login, validates the config before reloading, and walks you through optional UFW and fail2ban setup.
+ 
+The rest of this README explains what each step does manually and why, useful if you want to understand or customize the process rather than just run the script.
+ 
+---
 ## 🚀 Step 1: Generate your local SSH key
 
 Using a Password isnt secure enough as it is possible to brute force and guess the password instead we will use the **Ed25519 Curve** which offers better cyrptographic strength and offers more performance than legacy RSA keys
